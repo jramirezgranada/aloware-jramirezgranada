@@ -17,14 +17,11 @@ class PostSeeder extends Seeder
     public function run()
     {
         $faker = Factory::create();
-        $qty = 5;
 
-        for ($i = 0; $i < $qty; $i++) {
-            DB::table('posts')->insert([
-                'title' => $faker->text(200),
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-        }
+        DB::table('posts')->insert([
+            'title' => 'Title Test',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
     }
 }

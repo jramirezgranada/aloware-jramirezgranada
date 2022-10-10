@@ -17,10 +17,12 @@ return new class extends Migration {
             $table->string('name');
             $table->string('message');
             $table->tinyInteger('level');
-            $table->unsignedBigInteger('comment_id');
+            $table->unsignedBigInteger('comment_id')->nullable();
+            $table->unsignedBigInteger('post_id')->nullable();
             $table->timestamps();
 
             $table->foreign('comment_id')->references('id')->on('comments')->onDelete('cascade');
+            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
         });
     }
 
