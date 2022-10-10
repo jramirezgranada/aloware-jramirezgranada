@@ -2,12 +2,23 @@
 
 namespace App\Http\Resources;
 
+use App\Services\CommentService;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CommentResource extends JsonResource
 {
+    protected $commentService;
+
+    public $preserveKeys = true;
+
+    public function __construct($resource)
+    {
+        parent::__construct($resource);
+        $this->commentService = new CommentService();
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -20,10 +31,14 @@ class CommentResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'message' => $this->message,
-            'level' => $this->level,
+            'comments' => $this->commentService->getSubCommentsByCommentId($this->id)
         ];
     }
 
+    /**
+     * @param $offset
+     * @return bool
+     */
     public function offsetExists($offset): bool
     {
         return array_key_exists($offset, $this->resource);

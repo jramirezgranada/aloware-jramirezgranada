@@ -165,4 +165,69 @@ class CommentTest extends TestCase
 
         $this->assertEquals('Comments system only allows 3 layers of comments', $error->error);
     }
+
+
+    /**
+     * @test
+     */
+    public function should_get_parent_and_children_comments()
+    {
+        $post = DB::table('posts')->first();
+
+        $comment1 = $this->json('post', 'api/comments', [
+            'name' => $this->faker->name,
+            'message' => $this->faker->text,
+            'post_id' => $post->id,
+            'comment_id' => 1
+        ]);
+
+        $comment1 = json_decode($comment1->getContent())->data;
+
+        $comment2 = $this->json('post', 'api/comments', [
+            'name' => $this->faker->name,
+            'message' => $this->faker->text,
+            'post_id' => $post->id,
+            'comment_id' => $comment1->id
+        ]);
+
+        $comment2 = json_decode($comment2->getContent())->data;
+
+        $this->json('get', 'api/comments/1')->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'message',
+                        'comments' => [
+                            '*' => [
+                                'id',
+                                'name',
+                                'message',
+                                'comments'
+                            ]
+                        ],
+                    ],
+                ],
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function should_return_an_error_when_the_post_ids_are_different()
+    {
+        $post = DB::table('posts')->first();
+
+        $comment = $this->json('post', 'api/comments', [
+            'name' => $this->faker->name,
+            'message' => $this->faker->text,
+            'post_id' => 2,
+            'comment_id' => 1
+        ])->assertStatus(422)->assertJsonStructure(['error']);
+
+        $error = json_decode($comment->getContent());
+
+        $this->assertEquals('The indicated post id is different than parent comment post id, please check', $error->error);
+    }
 }

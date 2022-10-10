@@ -7,7 +7,6 @@ use App\Http\Resources\CommentResource;
 use App\Services\CommentService;
 use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Support\Facades\DB;
 
 class CommentController extends Controller
 {
@@ -23,9 +22,7 @@ class CommentController extends Controller
 
     public function index()
     {
-        $comments = DB::table('comments')->get();
-
-        return CommentResource::collection($comments);
+        return CommentResource::collection($this->commentService->getAllComments());
     }
 
     public function store(CommentStoreRequest $request)
@@ -41,5 +38,10 @@ class CommentController extends Controller
 
             throw new HttpResponseException($response);
         }
+    }
+
+    public function show(int $id)
+    {
+        return CommentResource::collection($this->commentService->getCommentById($id));
     }
 }
