@@ -9,9 +9,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CommentResource extends JsonResource
 {
-    protected $commentService;
+    /**
+     * @var CommentService
+     */
+    protected CommentService $commentService;
 
-    public $preserveKeys = true;
+    /**
+     * @var bool
+     */
+    public bool $preserveKeys = true;
 
     public function __construct($resource)
     {

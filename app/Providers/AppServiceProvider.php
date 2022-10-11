@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Http\Resources\CommentResource;
+use App\Http\Resources\PostResource;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        CommentResource::withoutWrapping();
+        PostResource::withoutWrapping();
     }
 }
