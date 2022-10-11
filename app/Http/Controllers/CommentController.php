@@ -8,6 +8,7 @@ use App\Services\CommentService;
 use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CommentController extends Controller
@@ -68,4 +69,18 @@ class CommentController extends Controller
             'message' => $message
         ]);
     }
+
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return AnonymousResourceCollection
+     */
+    public function update(\Illuminate\Http\Request $request, int $id)
+    {
+        $this->commentService->updateCommentById($id, $request->all());
+
+        return CommentResource::collection($this->commentService->getCommentById($id));
+    }
 }
+
+

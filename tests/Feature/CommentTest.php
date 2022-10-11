@@ -224,10 +224,47 @@ class CommentTest extends TestCase
      */
     public function should_delete_a_comment()
     {
-        $comment = $this->json('delete', '/api/comments/1')
+        $this->json('delete', '/api/comments/1')
             ->assertStatus(200);
 
         $this->assertDatabaseMissing('comments', ['id' => 1]);
+    }
 
+    /**
+     * @test
+     */
+    public function should_update_a_comment()
+    {
+        $post = DB::table('posts')->first();
+
+        $comment = $this->json('post', 'api/comments', [
+            'name' => $this->faker->name,
+            'message' => $this->faker->text,
+            'post_id' => $post->id,
+            'comment_id' => 1
+        ])->assertStatus(200)->assertJsonStructure([
+            'id',
+            'name',
+            'message',
+        ]);
+
+        $comment = json_decode($comment->getContent());
+
+        $this->assertDatabaseHas('comments', ['id' => $comment->id]);
+
+        $updatedComment = $this->json(
+            'patch',
+            'api/comments/' . $comment->id,
+            [
+                'name' => $this->faker->name,
+                'message' => $this->faker->text,
+            ]
+        );
+
+        $updatedComment = json_decode($updatedComment->getContent())[0];
+
+        $this->assertDatabaseHas('comments',
+            ['id' => $comment->id, 'name' => $updatedComment->name, 'message' => $updatedComment->message]
+        );
     }
 }

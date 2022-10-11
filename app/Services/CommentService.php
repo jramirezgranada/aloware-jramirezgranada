@@ -92,4 +92,14 @@ class CommentService
     {
         return DB::table('comments')->delete($id);
     }
+
+    /**
+     * @param int $id
+     * @param array $data
+     * @return int
+     */
+    public function updateCommentById(int $id, array $data): int
+    {
+        return DB::table('comments')->where('id', $id)->update($data);
+    }
 }
