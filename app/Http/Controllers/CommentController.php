@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CommentStoreRequest;
+use App\Http\Requests\CommentUpdateRequest;
 use App\Http\Resources\CommentResource;
 use App\Services\CommentService;
 use Exception;
@@ -75,7 +76,7 @@ class CommentController extends Controller
      * @param int $id
      * @return AnonymousResourceCollection
      */
-    public function update(\Illuminate\Http\Request $request, int $id)
+    public function update(CommentUpdateRequest $request, int $id)
     {
         $this->commentService->updateCommentById($id, $request->all());
 
