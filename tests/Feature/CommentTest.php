@@ -23,7 +23,7 @@ class CommentTest extends TestCase
     /**
      * @test
      */
-    public function comments_api_is_accessible()
+    public function it_should_comments_api_be_accessible()
     {
         $this->json('get', 'api/comments')
             ->assertStatus(200);
@@ -32,9 +32,10 @@ class CommentTest extends TestCase
     /**
      * @test
      */
-    public function should_return_comments_data()
+    public function it_should_return_comments_data()
     {
         $this->json('get', '/api/comments')
+            ->assertStatus(200)
             ->assertJsonStructure([
                 '*' => [
                     'id',
@@ -47,7 +48,7 @@ class CommentTest extends TestCase
     /**
      * @test
      */
-    public function should_return_validation_errors()
+    public function it_should_return_validation_errors()
     {
         $post = DB::table('posts')->first();
 
@@ -63,7 +64,7 @@ class CommentTest extends TestCase
     /**
      * @test
      */
-    public function should_insert_first_comment(): int
+    public function it_should_insert_first_comment(): void
     {
         $post = DB::table('posts')->first();
 
@@ -80,14 +81,12 @@ class CommentTest extends TestCase
         $commentId = json_decode($comment->getContent())->id;
 
         $this->assertDatabaseHas('comments', ['id' => $commentId]);
-
-        return $commentId;
     }
 
     /**
      * @test
      */
-    public function should_insert_second_level_comment()
+    public function it_should_insert_second_level_comment()
     {
         $post = DB::table('posts')->first();
 
@@ -110,7 +109,7 @@ class CommentTest extends TestCase
     /**
      * @test
      */
-    public function should_throw_an_exception_when_try_to_insert_fourth_comment()
+    public function it_should_throw_an_exception_when_try_to_insert_fourth_comment()
     {
         $post = DB::table('posts')->first();
 
@@ -160,7 +159,7 @@ class CommentTest extends TestCase
     /**
      * @test
      */
-    public function should_get_parent_and_children_comments()
+    public function it_should_get_parent_and_children_comments()
     {
         $post = DB::table('posts')->first();
 
@@ -203,7 +202,7 @@ class CommentTest extends TestCase
     /**
      * @test
      */
-    public function should_return_an_error_when_the_post_ids_are_different()
+    public function it_should_return_an_error_when_the_post_ids_are_different()
     {
         $post = DB::table('posts')->first();
 
@@ -222,7 +221,7 @@ class CommentTest extends TestCase
     /**
      * @test
      */
-    public function should_delete_a_comment()
+    public function it_should_delete_a_comment()
     {
         $this->json('delete', '/api/comments/1')
             ->assertStatus(200);
@@ -233,7 +232,7 @@ class CommentTest extends TestCase
     /**
      * @test
      */
-    public function should_update_a_comment()
+    public function it_should_update_a_comment()
     {
         $post = DB::table('posts')->first();
 

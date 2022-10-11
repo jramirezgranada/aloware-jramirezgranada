@@ -24,7 +24,8 @@ class CommentStoreRequest extends BaseRequest
         return [
             'name' => 'required',
             'message' => 'required',
-            'post_id' => 'required'
+            'post_id' => 'required',
+            'comment_id' => 'sometimes|exists:comments,id'
         ];
     }
 }

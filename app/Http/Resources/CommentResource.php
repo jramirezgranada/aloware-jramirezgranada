@@ -21,8 +21,8 @@ class CommentResource extends JsonResource
 
     public function __construct($resource)
     {
-        parent::__construct($resource);
         $this->commentService = new CommentService();
+        parent::__construct($resource);
     }
 
     /**

@@ -8,23 +8,20 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class CommentService
 {
 
     /**
      * @param Request $request
-     * @return object|null
+     * @return stdClass
      * @throws Exception
      */
-    public function createComment(Request $request): object|null
+    public function createComment(Request $request): stdClass
     {
         $this->getLevel($request);
         $data = $request->all();
-
-        if ($data['level'] > 3) {
-            throw new Exception('Comments system only allows 3 layers of comments');
-        }
 
         if (isset($data['post_id']) && isset($data['comment_id'])) {
             $parentComment = $this->getCommentById($data['comment_id'])->first();
@@ -36,25 +33,29 @@ class CommentService
 
         $commentId = DB::table('comments')->insertGetId($data);
 
-        return DB::table('comments')->where('id', $commentId)->first();
+        return $this->getCommentById($commentId)->first();
     }
 
     /**
      * @param Request $request
-     * @return Request
+     * @return void
+     * @throws Exception
      */
-    private function getLevel(Request &$request): Request
+    private function getLevel(Request &$request): void
     {
-        if (is_null($request->get('comment_id'))) {
+        if (null === $request->get('comment_id')) {
             $request['level'] = 1;
-            return $request;
+            return;
         }
 
         $parentComment = $this->getCommentById($request->get('comment_id'))->first();
 
+        if ($parentComment->level === 3) {
+            throw new Exception('Comments system only allows 3 layers of comments');
+        }
+
         $request['level'] = $parentComment->level + 1;
 
-        return $request;
     }
 
     /**
