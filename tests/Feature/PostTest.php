@@ -33,11 +33,9 @@ class PostTest extends TestCase
     {
         $this->json('get', '/api/posts')
             ->assertJsonStructure([
-                'data' => [
-                    '*' => [
-                        'id',
-                        'title',
-                    ],
+                '*' => [
+                    'id',
+                    'title',
                 ],
             ]);
     }

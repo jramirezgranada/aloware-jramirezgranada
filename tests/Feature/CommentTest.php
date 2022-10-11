@@ -36,12 +36,10 @@ class CommentTest extends TestCase
     {
         $this->json('get', '/api/comments')
             ->assertJsonStructure([
-                'data' => [
-                    '*' => [
-                        'id',
-                        'name',
-                        'message',
-                    ],
+                '*' => [
+                    'id',
+                    'name',
+                    'message',
                 ],
             ]);
     }
@@ -74,14 +72,12 @@ class CommentTest extends TestCase
             'message' => $this->faker->text,
             'post_id' => $post->id,
         ])->assertStatus(200)->assertJsonStructure([
-            'data' => [
-                'id',
-                'name',
-                'message',
-            ]
+            'id',
+            'name',
+            'message',
         ]);
 
-        $commentId = json_decode($comment->getContent())->data->id;
+        $commentId = json_decode($comment->getContent())->id;
 
         $this->assertDatabaseHas('comments', ['id' => $commentId]);
 
@@ -101,14 +97,12 @@ class CommentTest extends TestCase
             'post_id' => $post->id,
             'comment_id' => 1
         ])->assertStatus(200)->assertJsonStructure([
-            'data' => [
-                'id',
-                'name',
-                'message',
-            ]
+            'id',
+            'name',
+            'message',
         ]);
 
-        $comment = json_decode($comment->getContent())->data;
+        $comment = json_decode($comment->getContent());
 
         $this->assertDatabaseHas('comments', ['id' => $comment->id, 'level' => 2]);
     }
@@ -126,14 +120,12 @@ class CommentTest extends TestCase
             'post_id' => $post->id,
             'comment_id' => 1
         ])->assertStatus(200)->assertJsonStructure([
-            'data' => [
-                'id',
-                'name',
-                'message',
-            ]
+            'id',
+            'name',
+            'message',
         ]);
 
-        $comment = json_decode($comment->getContent())->data;
+        $comment = json_decode($comment->getContent());
 
         $this->assertDatabaseHas('comments', ['id' => $comment->id, 'level' => 2]);
 
@@ -143,14 +135,12 @@ class CommentTest extends TestCase
             'post_id' => $post->id,
             'comment_id' => $comment->id
         ])->assertStatus(200)->assertJsonStructure([
-            'data' => [
-                'id',
-                'name',
-                'message',
-            ]
+            'id',
+            'name',
+            'message',
         ]);
 
-        $comment = json_decode($comment->getContent())->data;
+        $comment = json_decode($comment->getContent());
 
         $this->assertDatabaseHas('comments', ['id' => $comment->id, 'level' => 3]);
 
@@ -181,7 +171,7 @@ class CommentTest extends TestCase
             'comment_id' => 1
         ]);
 
-        $comment1 = json_decode($comment1->getContent())->data;
+        $comment1 = json_decode($comment1->getContent());
 
         $comment2 = $this->json('post', 'api/comments', [
             'name' => $this->faker->name,
@@ -190,23 +180,21 @@ class CommentTest extends TestCase
             'comment_id' => $comment1->id
         ]);
 
-        $comment2 = json_decode($comment2->getContent())->data;
+        $comment2 = json_decode($comment2->getContent());
 
         $this->json('get', 'api/comments/1')->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
-                    '*' => [
-                        'id',
-                        'name',
-                        'message',
-                        'comments' => [
-                            '*' => [
-                                'id',
-                                'name',
-                                'message',
-                                'comments'
-                            ]
-                        ],
+                '*' => [
+                    'id',
+                    'name',
+                    'message',
+                    'comments' => [
+                        '*' => [
+                            'id',
+                            'name',
+                            'message',
+                            'comments'
+                        ]
                     ],
                 ],
             ]);
@@ -229,5 +217,17 @@ class CommentTest extends TestCase
         $error = json_decode($comment->getContent());
 
         $this->assertEquals('The indicated post id is different than parent comment post id, please check', $error->error);
+    }
+
+    /**
+     * @test
+     */
+    public function should_delete_a_comment()
+    {
+        $comment = $this->json('delete', '/api/comments/1')
+            ->assertStatus(200);
+
+        $this->assertDatabaseMissing('comments', ['id' => 1]);
+
     }
 }

@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Http\Resources\CommentResource;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class CommentService
@@ -64,14 +66,30 @@ class CommentService
         return DB::table('comments')->where('id', $commentId)->get();
     }
 
-    public function getAllComments()
+    /**
+     * @return Collection
+     */
+    public function getAllComments(): Collection
     {
         return DB::table('comments')->get();
     }
 
-    public function getSubCommentsByCommentId($commentId)
+    /**
+     * @param $commentId
+     * @return AnonymousResourceCollection
+     */
+    public function getSubCommentsByCommentId($commentId): AnonymousResourceCollection
     {
         $subComments = DB::table('comments')->where('comment_id', $commentId)->get();
         return CommentResource::collection($subComments);
+    }
+
+    /**
+     * @param int $id
+     * @return int
+     */
+    public function deleteCommentById(int $id): int
+    {
+        return DB::table('comments')->delete($id);
     }
 }
